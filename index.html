@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Keterlambatan Siswa</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ================= HEADER ================= -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <div class="logo" aria-hidden="true">⏰</div>
+      <div>
+        <h1>Data Keterlambatan Siswa</h1>
+        <p id="namaSekolah" class="muted"></p>
+      </div>
+    </div>
+
+    <div class="topbar__right">
+      <div class="clock" aria-live="off">
+        <div id="clockDate" class="clock__date"></div>
+        <div id="clockTime" class="clock__time"></div>
+      </div>
+      <span id="statusBadge" class="badge badge--wait">Menghubungkan…</span>
+      <div id="userBox" class="userbox" hidden>
+        <span id="userEmail" class="muted"></span>
+        <button id="btnLogout" class="btn btn--ghost btn--sm" type="button">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="demoBanner" class="banner" hidden>
+    <strong>Mode Demo.</strong> Data hanya tersimpan di browser ini dan belum dibagikan ke guru lain.
+    Ikuti <em>README.md</em> untuk mengaktifkan mode real-time.
+  </div>
+
+  <!-- ================= LOGIN ================= -->
+  <main id="loginView" class="login" hidden>
+    <form id="loginForm" class="card login__card" autocomplete="on">
+      <h2>Masuk Guru</h2>
+      <p class="muted">Gunakan akun yang dibuat oleh admin sekolah.</p>
+
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" type="email" autocomplete="username" required placeholder="nama@sekolah.sch.id">
+
+      <label for="loginPassword">Kata sandi</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" required>
+
+      <p id="loginError" class="error" role="alert" hidden></p>
+      <button id="btnLogin" class="btn btn--primary btn--block" type="submit">Masuk</button>
+    </form>
+  </main>
+
+  <!-- ================= APLIKASI ================= -->
+  <main id="appView" class="container" hidden>
+
+    <!-- Statistik -->
+    <section class="stats" aria-label="Ringkasan">
+      <article class="stat">
+        <span class="stat__label">Terlambat hari ini</span>
+        <strong id="statToday" class="stat__value">0</strong>
+      </article>
+      <article class="stat">
+        <span class="stat__label">7 hari terakhir</span>
+        <strong id="statWeek" class="stat__value">0</strong>
+      </article>
+      <article class="stat">
+        <span class="stat__label">Bulan ini</span>
+        <strong id="statMonth" class="stat__value">0</strong>
+      </article>
+      <article class="stat stat--warn">
+        <span class="stat__label">Siswa sering terlambat</span>
+        <strong id="statFrequent" class="stat__value">0</strong>
+      </article>
+    </section>
+
+    <div class="layout">
+
+      <!-- Kolom kiri: form + sering terlambat -->
+      <aside class="layout__side">
+        <form id="lateForm" class="card" autocomplete="off">
+          <h2>Catat Keterlambatan</h2>
+          <p class="muted">Diisi oleh guru piket.</p>
+
+          <label for="inNama">Nama siswa</label>
+          <input id="inNama" type="text" list="listNama" required minlength="3" maxlength="100"
+                 placeholder="Ketik nama lengkap" autocapitalize="words">
+          <datalist id="listNama"></datalist>
+
+          <div class="row">
+            <div>
+              <label for="inKelas">Kelas</label>
+              <input id="inKelas" type="text" list="listKelas" required maxlength="20" placeholder="mis. X-3">
+              <datalist id="listKelas"></datalist>
+            </div>
+            <div>
+              <label for="inJam">Jam datang</label>
+              <input id="inJam" type="time" required>
+            </div>
+          </div>
+
+          <label for="inAlasan">Alasan</label>
+          <select id="inAlasan"></select>
+
+          <label for="inCatatan">Catatan (opsional)</label>
+          <textarea id="inCatatan" rows="2" maxlength="300" placeholder="Mis. tidak membawa surat izin"></textarea>
+
+          <label for="inPiket">Guru piket</label>
+          <input id="inPiket" type="text" required maxlength="80" placeholder="Nama guru piket hari ini">
+
+          <label class="check">
+            <input id="inAutoWA" type="checkbox">
+            <span>Langsung buka WhatsApp Guru BK setelah disimpan</span>
+          </label>
+
+          <button id="btnSave" class="btn btn--primary btn--block" type="submit">Simpan</button>
+        </form>
+
+        <section class="card">
+          <div class="card__head">
+            <h2>Sering terlambat bulan ini</h2>
+          </div>
+          <ul id="frequentList" class="frequent"></ul>
+        </section>
+      </aside>
+
+      <!-- Kolom kanan: tabel -->
+      <section class="layout__main card">
+        <div class="card__head">
+          <h2>Data Keterlambatan</h2>
+          <div class="actions">
+            <button id="btnSettings" class="btn btn--ghost btn--sm" type="button">⚙ Kontak BK</button>
+            <button id="btnCsv" class="btn btn--ghost btn--sm" type="button">⬇ Unduh CSV</button>
+          </div>
+        </div>
+
+        <div class="filters">
+          <div class="chips" role="group" aria-label="Periode cepat">
+            <button class="chip" type="button" data-range="today">Hari ini</button>
+            <button class="chip" type="button" data-range="week">7 hari</button>
+            <button class="chip" type="button" data-range="month">Bulan ini</button>
+            <button class="chip" type="button" data-range="all">Semua</button>
+          </div>
+          <div class="filters__grid">
+            <div>
+              <label for="fFrom">Dari</label>
+              <input id="fFrom" type="date">
+            </div>
+            <div>
+              <label for="fTo">Sampai</label>
+              <input id="fTo" type="date">
+            </div>
+            <div>
+              <label for="fKelas">Kelas</label>
+              <select id="fKelas"><option value="">Semua kelas</option></select>
+            </div>
+            <div>
+              <label for="fSearch">Cari nama</label>
+              <input id="fSearch" type="search" placeholder="Ketik nama…">
+            </div>
+          </div>
+        </div>
+
+        <div class="send-bar">
+          <span id="resultInfo" class="muted"></span>
+          <div class="actions">
+            <a id="btnRekapWA" class="btn btn--wa btn--sm" href="#" target="_blank" rel="noopener">Kirim rekap ke BK (WhatsApp)</a>
+            <a id="btnRekapMail" class="btn btn--mail btn--sm" href="#" target="_blank" rel="noopener">Kirim rekap ke BK (Gmail)</a>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Jam</th>
+                <th>Nama</th>
+                <th>Kelas</th>
+                <th>Alasan</th>
+                <th>Piket</th>
+                <th class="col-aksi">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+          <p id="emptyState" class="empty" hidden>Belum ada data pada filter ini.</p>
+        </div>
+      </section>
+    </div>
+
+    <footer class="footer muted">
+      Data siswa bersifat rahasia. Hanya untuk keperluan pembinaan di sekolah.
+    </footer>
+  </main>
+
+  <!-- ================= MODAL KONTAK BK ================= -->
+  <dialog id="settingsDialog" class="dialog">
+    <form id="settingsForm" method="dialog">
+      <h2>Kontak Guru BK</h2>
+      <p class="muted">Tersimpan di browser ini. Nilai awal diambil dari <code>config.js</code>.</p>
+
+      <label for="sNama">Nama Guru BK</label>
+      <input id="sNama" type="text" maxlength="80">
+
+      <label for="sWA">Nomor WhatsApp</label>
+      <input id="sWA" type="tel" placeholder="08xxxxxxxxxx atau 628xxxxxxxxxx">
+
+      <label for="sEmail">Email (Gmail)</label>
+      <input id="sEmail" type="email" placeholder="guru.bk@gmail.com">
+
+      <div class="dialog__actions">
+        <button id="btnSettingsReset" class="btn btn--ghost" type="button">Kembalikan ke config.js</button>
+        <button id="btnSettingsCancel" class="btn btn--ghost" type="button">Batal</button>
+        <button id="btnSettingsSave" class="btn btn--primary" type="submit" value="save">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <!-- Library Supabase (hanya dipakai pada mode real-time) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
