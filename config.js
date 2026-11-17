@@ -18,7 +18,7 @@ window.CONFIG = {
   SUPABASE_URL: "https://jydkqbajzczpeffbetsd.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_CkfhiFhdMyp5-8xxgC76Cg_X2O2Q8fk",
 
-  // ---- Daftar kelas (muncul sebagai saran saat mengetik dan di filter) ----
+  // ---- Daftar kelas resmi (pilihan wajib di form dan filter; urutan mengikuti daftar ini) ----
   KELAS: [
     "X-1", "X-2", "X-3", "X-4", "X-5", "X-6", "X-7", "X-8", "X-9",
     "XI-A", "XI-B", "XI-C", "XI-D", "XI-E", "XI-F", "XI-G", "XI-H", "XI-I",
@@ -31,11 +31,11 @@ window.CONFIG = {
     "Macet",
     "Kendaraan bermasalah",
     "Antar jemput terlambat",
-    "Sakit", "keperluan keluarga",
+    "Sakit / keperluan keluarga",
     "Tanpa keterangan",
     "Lainnya"
   ],
 
   // ---- Siswa dianggap "sering terlambat" jika dalam 1 bulan >= angka ini ----
-  BATAS_SERING_TERLAMBAT: 4
+  BATAS_SERING_TERLAMBAT: 3
 };
