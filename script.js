@@ -267,11 +267,7 @@
   // Render
   // ---------------------------------------------------------
   function configKelas() {
-    const out = [];
-    (CFG.TINGKAT || []).forEach((t) => {
-      for (let i = 1; i <= (Number(CFG.JUMLAH_ROMBEL) || 0); i++) out.push(`${t}-${i}`);
-    });
-    return out;
+    return Array.isArray(CFG.KELAS) ? CFG.KELAS : [];
   }
 
   function renderOptions() {
