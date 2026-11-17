@@ -275,18 +275,22 @@
     const fromData = [...new Set(rows.map((r) => r.kelas))];
     const cfgKelas = configKelas();
     const extra = fromData.filter((k) => !cfgKelas.includes(k));
-    const suggestions = [...cfgKelas, ...extra];
-    $('listKelas').innerHTML = suggestions.map((k) => `<option value="${esc(k)}"></option>`).join('');
+
+    // dropdown kelas di form: hanya daftar resmi SMAN 2 Trenggalek, urutan sesuai config
+    const formSel = $('inKelas');
+    const keepKelas = formSel.value;
+    formSel.innerHTML = '<option value="">Pilih kelas…</option>' +
+      cfgKelas.map((k) => `<option value="${esc(k)}">${esc(k)}</option>`).join('');
+    formSel.value = cfgKelas.includes(keepKelas) ? keepKelas : '';
 
     // saran nama: dari data yang sudah ada
     const names = [...new Set(rows.map((r) => r.nama))].slice(0, 600);
     $('listNama').innerHTML = names.map((n) => `<option value="${esc(n)}"></option>`).join('');
 
-    // filter kelas
+    // filter kelas: urutan config, lalu kelas lama dari data (jika ada) di belakang
     const sel = $('fKelas');
     const current = filter.kelas;
-    const all = [...new Set([...cfgKelas, ...fromData])]
-      .sort((a, b) => a.localeCompare(b, 'id', { numeric: true }));
+    const all = [...cfgKelas, ...extra];
     sel.innerHTML = '<option value="">Semua kelas</option>' +
       all.map((k) => `<option value="${esc(k)}">${esc(k)}</option>`).join('');
     sel.value = all.includes(current) ? current : '';
@@ -468,6 +472,10 @@
 
     if (nama.length < 3 || !kelas || !jam || !piket) {
       toast('Lengkapi nama siswa, kelas, jam, dan nama guru piket.', 'bad');
+      return;
+    }
+    if (!configKelas().includes(kelas)) {
+      toast('Pilih kelas dari daftar.', 'bad');
       return;
     }
 
