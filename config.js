@@ -31,11 +31,11 @@ window.CONFIG = {
     "Macet",
     "Kendaraan bermasalah",
     "Antar jemput terlambat",
-    "Sakit / keperluan keluarga",
+    "Sakit", "keperluan keluarga",
     "Tanpa keterangan",
     "Lainnya"
   ],
 
   // ---- Siswa dianggap "sering terlambat" jika dalam 1 bulan >= angka ini ----
-  BATAS_SERING_TERLAMBAT: 3
+  BATAS_SERING_TERLAMBAT: 4
 };
