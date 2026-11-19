@@ -1,88 +1,120 @@
-# Web Data Keterlambatan Siswa
+# Data Keterlambatan Siswa — SMA Negeri 2 Trenggalek
 
-Web untuk mencatat siswa terlambat oleh **guru piket**, bisa dibuka oleh **semua guru**, dan datanya bisa langsung dikirim ke **Guru BK** lewat **WhatsApp** atau **Gmail**.
+Produk digital berbasis website untuk mencatat keterlambatan siswa secara *real time*, dapat diakses seluruh guru, dan terhubung langsung ke Guru BK melalui WhatsApp atau Gmail.
 
-## Isi folder
+**Tema Pelatihan:** Solusi Digital untuk Kehidupan Sehari-hari Berbantuan Kecerdasan Artifisial
+**Platform:** Produk Berbasis Website (HTML, CSS, JavaScript)
+**Alamat web (live):** <https://devinaldy93-cell.github.io/web-keterlambatan-siswa/>
 
-| File | Fungsi |
+---
+
+## a. Judul & Deskripsi
+
+**Nama produk:** Data Keterlambatan Siswa
+
+**Latar belakang masalah.** Pencatatan siswa terlambat di sekolah sering dilakukan secara manual di buku piket. Akibatnya, data sulit dicari, sulit direkap, dan Guru BK sering terlambat mengetahui siswa yang sudah berulang kali datang terlambat. Keterlambatan yang tidak terpantau bisa berlanjut menjadi kebiasaan.
+
+**Solusi.** Web ini memungkinkan guru piket mencatat keterlambatan siswa dari perangkat mana pun (HP atau laptop). Data langsung tersinkron ke semua guru yang sedang login. Web juga menandai siswa yang sudah terlambat beberapa kali dalam sebulan, lalu mengirim laporan ke Guru BK dalam satu klik melalui WhatsApp atau Gmail.
+
+**Fitur utama:**
+- Pencatatan oleh guru piket: nama siswa, kelas, alasan, jam datang, dan catatan.
+- Data real-time untuk semua guru yang sudah login.
+- Statistik: terlambat hari ini, 7 hari terakhir, bulan ini, dan siswa yang sering terlambat.
+- Filter tanggal, kelas, dan pencarian nama, serta unduh CSV.
+- Kirim laporan ke Guru BK per siswa atau sebagai rekap, lewat WhatsApp atau Gmail.
+- Dapat dipasang ke layar utama HP seperti aplikasi.
+
+**Target pengguna:**
+- **Utama:** guru piket, yang mencatat keterlambatan.
+- **Kedua:** Guru BK, yang menerima laporan dan menindaklanjuti.
+- **Ketiga:** guru lain dan wali kelas, yang dapat melihat data.
+
+---
+
+## b. Teknologi yang Digunakan
+
+| Komponen | Teknologi |
+|---|---|
+| Struktur halaman | HTML5 |
+| Tampilan | CSS3 (layout grid dan flexbox, responsif) |
+| Logika aplikasi | JavaScript (ES2020, tanpa framework) |
+| Database, login, dan real-time | [Supabase](https://supabase.com) (PostgreSQL, Auth, Realtime), dimuat lewat `supabase-js` v2 dari CDN jsDelivr |
+| Keamanan data | Row Level Security (RLS) PostgreSQL |
+| Pengiriman pesan | Tautan `wa.me` (WhatsApp) dan Gmail compose |
+| Publikasi | GitHub Pages |
+
+---
+
+## c. Pemanfaatan AI (AI Usage Disclosure)
+
+**Alat AI yang digunakan:** Claude (Anthropic), dipakai melalui antarmuka chat.
+
+**Prompt utama yang digunakan:**
+
+1. *"Bantu kami sebagai siswa SMA dengan memposisikan dirimu sebagai web developer, buatkan koding web mulai dari HTML, CSS, dan JavaScript yang berisi tentang web data keterlambatan siswa. Guru BK dapat dihubungi lewat WA atau Gmail. Guru piket memasukkan nama siswa dan kelas secara real time, dan semua guru bisa mengakses web ini."*
+2. Permintaan membandingkan Supabase dengan Firebase sebagai database, dari sisi perbedaan fitur, pola data, dan keamanan.
+3. Permintaan membuat skrip database Supabase (tabel, RLS, dan real-time) serta mengisi kredensial di `config.js`.
+4. Permintaan mengganti input kelas dengan daftar kelas resmi SMAN 2 Trenggalek (27 kelas, urut).
+5. Pertanyaan debugging: error PowerShell saat menjalankan `cd` dan `py -m http.server`, serta data yang belum muncul di Mode Demo.
+
+**Penyesuaian dan perbaikan mandiri yang kami lakukan terhadap saran AI:**
+
+- **Pilihan database:** kami membandingkan Supabase dan Firebase, lalu memilih Supabase karena data berbentuk tabel dan rekap lebih mudah dibuat dengan SQL.
+- **Daftar kelas:** saran awal AI memakai pola otomatis `X-1` sampai `X-8`. Kami menggantinya dengan daftar kelas resmi SMAN 2 Trenggalek (X-1 s.d. X-9, XI-A s.d. XI-I, XII-A s.d. XII-I) yang ditulis langsung di `config.js`, dan fungsi `configKelas()` di `script.js` kami ubah agar membaca daftar tersebut.
+- **Input kelas:** dari kolom teks bebas (`datalist`) menjadi dropdown yang hanya menerima kelas resmi, dengan validasi tambahan sebelum data disimpan.
+- **Mode Demo:** kami memakai Mode Demo hanya untuk uji coba. Mode Real-time (Supabase) dipakai untuk penggunaan sebenarnya.
+- **Cara menjalankan lokal:** saran awal menggunakan server Python. Karena Python belum terpasang di komputer kami, web dijalankan dengan cara membuka `index.html` langsung dan memakai Mode Demo.
+- **Verifikasi:** kami memeriksa sintaks JavaScript dengan `node --check`, memastikan setiap ID elemen di `script.js` ada di `index.html`, dan menguji web di browser (login, menyimpan data, dan status *Real-time aktif*).
+
+Catatan lengkap setiap interaksi ada di [`AI_LOGBOOK.md`](AI_LOGBOOK.md).
+
+---
+
+## d. Panduan Penggunaan
+
+### Untuk pengguna (guru)
+
+1. Buka alamat web: <https://devinaldy93-cell.github.io/web-keterlambatan-siswa/>
+2. Masuk dengan akun guru yang diberikan admin.
+3. **Guru piket:** isi nama siswa, pilih kelas dari daftar, pilih alasan, lalu klik **Simpan**. Jam datang terisi otomatis.
+4. Centang *Langsung buka WhatsApp Guru BK* jika ingin pesan laporan terbuka otomatis setelah menyimpan.
+5. **Guru BK:** gunakan tombol periode (Hari ini, 7 hari, Bulan ini, Semua) untuk melihat data. Tombol **WA** dan **Gmail** di setiap baris mengirim laporan per siswa. Tombol *Kirim rekap* mengirim rekap sesuai periode yang dipilih.
+6. Di HP, buka menu browser lalu pilih *Tambahkan ke layar utama*.
+
+### Untuk menjalankan sendiri (opsional, bagi pengembang)
+
+1. **Unduh repository** (tombol *Code* > *Download ZIP*) lalu ekstrak.
+2. **Buka `index.html`** dengan mengklik dua kali. Jika `SUPABASE_URL` dan `SUPABASE_ANON_KEY` di `config.js` kosong, web berjalan di **Mode Demo** (data tersimpan di browser itu saja).
+3. **Isi `config.js`:** nama sekolah, kontak BK (`BK_WA`, `BK_EMAIL`), daftar `KELAS`, dan pilihan `ALASAN`.
+4. **Siapkan database Supabase:**
+   1. Buat project baru di <https://supabase.com>.
+   2. Buka **SQL Editor**, tempel isi `setup-supabase.sql`, lalu klik **Run**.
+   3. Buka **Project Settings > API**, lalu salin *Project URL* ke `SUPABASE_URL` dan *publishable key* ke `SUPABASE_ANON_KEY` di `config.js`. Jangan pernah memakai kunci `service_role` di web.
+   4. Buka **Authentication > Sign In / Providers > Email**, lalu matikan *Allow new users to sign up* agar hanya akun buatan admin yang bisa masuk.
+   5. Buka **Authentication > Users > Add user**, buat akun untuk setiap guru.
+5. **Publikasi:** unggah file ke repository GitHub, lalu aktifkan **Settings > Pages** dengan sumber *Deploy from a branch* (branch `main`, folder `/root`).
+
+---
+
+## e. Identitas Pengembang
+
+| | Siswa 1 | Siswa 2 |
+|---|---|---|
+| Nama lengkap | [NAMA LENGKAP SISWA 1] | [NAMA LENGKAP SISWA 2] |
+| Kelas | [KELAS] | [KELAS] |
+| Jurusan | [JURUSAN] | [JURUSAN] |
+| Asal sekolah | SMA Negeri 2 Trenggalek | SMA Negeri 2 Trenggalek |
+
+---
+
+## Berkas dalam repository
+
+| Berkas | Fungsi |
 |---|---|
 | `index.html` | Struktur halaman |
-| `style.css` | Tampilan (responsif untuk HP dan laptop) |
-| `script.js` | Logika aplikasi |
-| `config.js` | **Satu-satunya file yang perlu kalian ubah**: nama sekolah, kontak BK, daftar kelas |
-| `setup-supabase.sql` | Skrip pembuat database untuk mode real-time |
-
-## Langkah 1 — Coba dulu (Mode Demo)
-
-Buka `index.html` dengan mengklik dua kali. Karena `SUPABASE_URL` di `config.js` masih kosong, web berjalan di **Mode Demo**: data tersimpan di browser itu saja. Cocok untuk mencoba tampilan dan tombol WhatsApp/Gmail.
-
-Kalau ingin membukanya lewat server lokal (PowerShell):
-
-```powershell
-cd C:\lokasi\folder\web-keterlambatan
-py -m http.server 8000
-```
-
-Lalu buka `http://localhost:8000` di browser.
-
-## Langkah 2 — Ubah `config.js`
-
-- `NAMA_SEKOLAH`
-- `BK_NAMA`, `BK_WA` (boleh `08xxx` atau `628xxx`), `BK_EMAIL`
-- `TINGKAT` dan `JUMLAH_ROMBEL` untuk daftar kelas
-- `ALASAN` untuk pilihan alasan terlambat
-
-Kontak BK juga bisa diganti langsung dari web lewat tombol **⚙ Kontak BK** (tersimpan di browser tersebut).
-
-## Langkah 3 — Aktifkan Mode Real-time (supaya semua guru melihat data yang sama)
-
-Mode Demo tidak membagikan data ke guru lain. Untuk itu dipakai database gratis **Supabase**.
-
-1. Daftar di <https://supabase.com> lalu klik **New project** (pilih region terdekat, mis. Singapore).
-2. Buka **SQL Editor** > **New query**, tempel seluruh isi `setup-supabase.sql`, klik **Run**.
-3. Buka **Project Settings > API**, salin:
-   - **Project URL** ke `SUPABASE_URL`
-   - **anon / publishable key** ke `SUPABASE_ANON_KEY`
-   
-   Jangan pernah memakai kunci `service_role` di file web ini.
-4. Buka **Authentication > Providers > Email**, matikan **Allow new users to sign up** supaya hanya akun buatan admin yang bisa masuk.
-5. Buka **Authentication > Users > Add user > Create new user**, buat satu akun per guru (email + kata sandi), centang *Auto Confirm User*.
-6. Muat ulang web. Halaman login akan muncul, dan badge di kanan atas berubah menjadi **Real-time aktif**.
-
-Keamanan data diatur oleh Row Level Security di `setup-supabase.sql`: hanya guru yang sudah login yang bisa melihat dan menambah data, dan hanya pencatat aslinya yang bisa menghapus.
-
-## Langkah 4 — Pasang online supaya semua guru bisa membuka
-
-Pilih salah satu (semuanya gratis):
-
-- **Netlify Drop**: buka <https://app.netlify.com/drop>, seret seluruh folder, selesai. Kalian dapat alamat web.
-- **GitHub Pages**: unggah folder ke repository, aktifkan Pages di Settings.
-- **Vercel**: impor repository atau seret folder lewat dashboard.
-
-Bagikan alamat webnya ke guru. Di HP bisa dipakai lewat menu *Tambahkan ke layar utama*.
-
-## Cara pakai harian
-
-**Guru piket**
-1. Masuk dengan akun guru.
-2. Ketik nama siswa (nama yang pernah tercatat muncul sebagai saran, kelas terisi otomatis).
-3. Pilih kelas dan alasan. Jam datang terisi otomatis dari jam sekarang.
-4. Isi nama guru piket, klik **Simpan**. Data langsung muncul di semua perangkat guru yang sedang membuka web.
-5. Centang *Langsung buka WhatsApp Guru BK* kalau ingin pesan laporan terbuka otomatis setelah menyimpan.
-
-**Guru BK / guru lain**
-- Lihat data per hari, 7 hari, bulan ini, atau rentang tanggal; saring per kelas atau cari nama.
-- Panel **Sering terlambat bulan ini** menandai siswa yang terlambat sebanyak `BATAS_SERING_TERLAMBAT` kali atau lebih.
-- **Unduh CSV** untuk dibuka di Excel atau Google Sheets.
-
-## Cara kerja tombol WhatsApp dan Gmail
-
-Tombol **WA** dan **Gmail** membuka WhatsApp / Gmail dengan pesan yang sudah terisi. Guru tinggal menekan *kirim*. Cara ini gratis dan tidak butuh server, tetapi pengirimannya tetap satu klik manual.
-
-Kalau nanti ingin pesan terkirim **otomatis tanpa klik** saat guru piket menyimpan, dibutuhkan layanan tambahan, misalnya WhatsApp gateway berbayar atau Google Apps Script untuk Gmail. Itu bisa ditambahkan sebagai pengembangan berikutnya.
-
-## Catatan penting
-
-- Data nama siswa termasuk data pribadi. Minta izin kepala sekolah / pihak sekolah sebelum dipakai, dan jangan bagikan akun guru ke siswa.
-- Mode Demo hanya untuk uji coba. Untuk penggunaan sebenarnya, gunakan Mode Real-time.
-- Daftar rekap yang dikirim lewat WhatsApp/Gmail dibatasi 40 baris per pesan; selebihnya dilihat di web.
+| `style.css` | Tampilan responsif |
+| `script.js` | Logika aplikasi (data, filter, statistik, pengiriman pesan, CSV) |
+| `config.js` | Pengaturan sekolah, kontak BK, daftar kelas, dan kredensial Supabase |
+| `setup-supabase.sql` | Skrip pembuat tabel, keamanan RLS, dan real-time |
+| `AI_LOGBOOK.md` | Catatan interaksi dengan AI (wajib sesuai pedoman) |
+| `README.md` | Dokumentasi produk |
